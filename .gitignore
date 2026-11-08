@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+.env.local
+data/*.json
+playwright-report
+test-results
+blob-report
+.DS_Store
+*.log

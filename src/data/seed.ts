@@ -1,0 +1,368 @@
+import type { HoursWindow, Report, Restroom } from '../domain/types';
+
+/** Packaged demo data date shown when the app is offline. Not a live feed. */
+export const SEED_PACKAGED_ON = '2026-11-08';
+
+const DAY = 86_400_000;
+const T0 = Date.now();
+const ago = (days: number) => new Date(T0 - days * DAY).toISOString();
+
+const ALL: number[] = [0, 1, 2, 3, 4, 5, 6];
+const WEEKDAYS: number[] = [1, 2, 3, 4, 5];
+const H24: HoursWindow[] = [{ days: ALL, open: '00:00', close: '24:00' }];
+
+const SAMPLE_NOTE = 'Fictional demo record created for testing. Not a real inspection.';
+
+function reviewed(daysAgo: number, source = 'Sample seed') {
+  const at = ago(daysAgo);
+  return {
+    verifiedAt: at,
+    verificationSource: source,
+    verificationHistory: [{ at, source, note: SAMPLE_NOTE }],
+    updatedAt: at,
+  };
+}
+
+function place(partial: Pick<Restroom, 'id' | 'cityId' | 'name' | 'address' | 'location'> & Partial<Restroom>): Restroom {
+  return {
+    access: 'public',
+    hours: H24,
+    timeZone: 'America/Chicago',
+    wheelchair: 'unknown',
+    stallType: 'unknown',
+    changingTable: 'unknown',
+    familyRestroom: 'unknown',
+    genderNeutral: 'unknown',
+    parkingDelayMin: null,
+    entranceDelayMin: null,
+    indoorWalkMin: null,
+    entranceSummary: null,
+    indoorSummary: null,
+    entrances: [],
+    sampleRating: null,
+    verifiedAt: null,
+    verificationSource: null,
+    verificationHistory: [],
+    dataset: 'fictional-demo',
+    fictional: true,
+    allowExternalNavigation: false,
+    updatedAt: ago(1),
+    ...partial,
+  };
+}
+
+/**
+ * Fictional facilities near real city centers.
+ * Pins are sample offsets for the demo, not surveyed entrances.
+ */
+export const SEED_RESTROOMS: Restroom[] = [
+  place({
+    id: 'mayfield-welcome-kiosk',
+    cityId: 'mayfield',
+    name: 'Mayfield Welcome Kiosk Restroom',
+    address: '100 Demo Civic Lane, Mayfield, KY',
+    location: { lat: 36.7428, lng: -88.6358 },
+    wheelchair: 'yes',
+    stallType: 'single-user',
+    changingTable: 'yes',
+    familyRestroom: 'yes',
+    entranceDelayMin: 0,
+    indoorWalkMin: 1,
+    entranceSummary: 'Main door, then the first door on the right past the information desk.',
+    indoorSummary: 'Single-user room. Written directions only — not indoor GPS.',
+    entrances: [
+      {
+        id: 'mayfield-kiosk-main',
+        name: 'Main door',
+        slug: 'mayfield-kiosk-main',
+        directions:
+          'From the main door QR sign, face the information desk. Walk past it on your left for about 20 steps. The single-user restroom is the first door on the right.',
+      },
+      {
+        id: 'mayfield-kiosk-side',
+        name: 'Side gate',
+        slug: 'mayfield-kiosk-side',
+        directions:
+          'From the side gate QR sign, enter the courtyard and use the door marked Hall. The restroom is immediately inside on the left.',
+      },
+    ],
+    sampleRating: { cleanliness: 4.5, easeOfAccess: 4.7, overall: 4.6, count: 28 },
+    ...reviewed(12),
+  }),
+  place({
+    id: 'mayfield-fair-office',
+    cityId: 'mayfield',
+    name: 'County Fair Office Restroom',
+    address: '200 Demo Fairgrounds Road, Mayfield, KY',
+    location: { lat: 36.7495, lng: -88.641 },
+    hours: [{ days: WEEKDAYS, open: '08:00', close: '16:30' }],
+    wheelchair: 'yes',
+    stallType: 'multi-stall',
+    changingTable: 'no',
+    familyRestroom: 'no',
+    genderNeutral: 'no',
+    entranceSummary: 'Inside the sample fair office, left of the front counter.',
+    sampleRating: { cleanliness: 4.0, easeOfAccess: 3.8, overall: 4.1, count: 11 },
+    ...reviewed(200),
+  }),
+  place({
+    id: 'mayfield-demo-depot',
+    cityId: 'mayfield',
+    name: 'Demo Depot Restroom',
+    address: '15 Sample Spur, Mayfield, KY',
+    location: { lat: 36.7378, lng: -88.6315 },
+    wheelchair: 'yes',
+    stallType: 'multi-stall',
+    entranceSummary: 'Side of the sample building, under the blue awning.',
+    sampleRating: { cleanliness: 3.0, easeOfAccess: 3.4, overall: 3.2, count: 9 },
+    ...reviewed(400),
+  }),
+  place({
+    id: 'mayfield-shelter',
+    cityId: 'mayfield',
+    name: 'Shelter House Restroom',
+    address: '40 Unknown Hollow, Mayfield, KY',
+    location: { lat: 36.732, lng: -88.6455 },
+    hours: null,
+    wheelchair: 'unknown',
+    stallType: 'unknown',
+  }),
+  place({
+    id: 'mayfield-overnight-canopy',
+    cityId: 'mayfield',
+    name: 'Overnight Canopy Restroom',
+    address: '900 Sample Night Road, Mayfield, KY',
+    location: { lat: 36.7535, lng: -88.6285 },
+    hours: [{ days: ALL, open: '22:00', close: '06:00' }],
+    wheelchair: 'yes',
+    stallType: 'single-user',
+    changingTable: 'no',
+    entranceSummary: 'On the canopy island, door facing the sample lot.',
+    sampleRating: { cleanliness: 3.7, easeOfAccess: 4.1, overall: 3.9, count: 6 },
+    ...reviewed(30),
+  }),
+  place({
+    id: 'paducah-transit',
+    cityId: 'paducah',
+    name: 'Transit Station Restroom',
+    address: '1 Demo Transit Plaza, Paducah, KY',
+    location: { lat: 37.0842, lng: -88.5992 },
+    wheelchair: 'yes',
+    stallType: 'multi-stall',
+    changingTable: 'yes',
+    familyRestroom: 'no',
+    indoorWalkMin: 2,
+    entranceSummary: 'From the sample platform, the restroom is beside the ticket window.',
+    sampleRating: { cleanliness: 3.6, easeOfAccess: 4.0, overall: 3.8, count: 40 },
+    ...reviewed(20),
+  }),
+  place({
+    id: 'paducah-gallery',
+    cityId: 'paducah',
+    name: 'Lakeside Gallery Restroom',
+    address: '800 Far Sample Road, Paducah, KY',
+    location: { lat: 37.0705, lng: -88.6285 },
+    wheelchair: 'yes',
+    stallType: 'single-user',
+    parkingDelayMin: 4,
+    indoorWalkMin: 3,
+    entranceSummary: 'Through the sample lobby, past the front gallery wall.',
+    sampleRating: { cleanliness: 4.8, easeOfAccess: 4.6, overall: 4.9, count: 22 },
+    ...reviewed(8),
+  }),
+  place({
+    id: 'paducah-demo-grill',
+    cityId: 'paducah',
+    name: 'Demo Grill Restroom',
+    address: '50 Purchase Lane, Paducah, KY',
+    location: { lat: 37.0815, lng: -88.6045 },
+    access: 'purchase-required',
+    hours: [{ days: ALL, open: '11:00', close: '21:00' }],
+    wheelchair: 'yes',
+    stallType: 'multi-stall',
+    entranceSummary: 'Past the sample host stand. This demo listing requires a purchase.',
+    sampleRating: { cleanliness: 3.4, easeOfAccess: 3.6, overall: 3.5, count: 14 },
+    ...reviewed(60),
+  }),
+  place({
+    id: 'paducah-demo-books',
+    cityId: 'paducah',
+    name: 'Demo Books Restroom',
+    address: '12 Customer Street, Paducah, KY',
+    location: { lat: 37.0855, lng: -88.6035 },
+    access: 'customer-only',
+    hours: [{ days: ALL, open: '10:00', close: '18:00' }],
+    wheelchair: 'no',
+    stallType: 'multi-stall',
+    changingTable: 'no',
+    entranceSummary: 'Behind the sample counter. Customers only, and the doorway is not wheelchair accessible in this demo.',
+    sampleRating: { cleanliness: 4.2, easeOfAccess: 2.4, overall: 4.0, count: 8 },
+    ...reviewed(100),
+  }),
+  place({
+    id: 'benton-park',
+    cityId: 'benton',
+    name: 'Park Single-User Restroom',
+    address: '1 Demo Park Drive, Benton, KY',
+    location: { lat: 36.8588, lng: -88.3492 },
+    wheelchair: 'yes',
+    stallType: 'single-user',
+    changingTable: 'yes',
+    familyRestroom: 'yes',
+    entranceSummary: 'Stone sample building at the park entrance, door on the east side.',
+    sampleRating: { cleanliness: 4.3, easeOfAccess: 4.6, overall: 4.4, count: 17 },
+    ...reviewed(15),
+  }),
+  place({
+    id: 'benton-trail',
+    cityId: 'benton',
+    name: 'Trail Shelter Restroom',
+    address: '77 Unknown Trail, Benton, KY',
+    location: { lat: 36.8515, lng: -88.356 },
+    hours: null,
+    access: 'unknown',
+  }),
+  place({
+    id: 'benton-annex',
+    cityId: 'benton',
+    name: 'Closed Annex Restroom',
+    address: '5 No Hours Place, Benton, KY',
+    location: { lat: 36.862, lng: -88.346 },
+    hours: [],
+    wheelchair: 'yes',
+    stallType: 'multi-stall',
+    entranceSummary: 'The sample annex lists no open hours.',
+    sampleRating: { cleanliness: 3.0, easeOfAccess: 3.2, overall: 3.0, count: 4 },
+    ...reviewed(90),
+  }),
+  place({
+    id: 'murray-commons',
+    cityId: 'murray',
+    name: 'Campus Commons Restroom',
+    address: '300 Demo Campus Way, Murray, KY',
+    location: { lat: 36.6116, lng: -88.3155 },
+    wheelchair: 'yes',
+    stallType: 'single-user',
+    changingTable: 'yes',
+    familyRestroom: 'yes',
+    genderNeutral: 'yes',
+    parkingDelayMin: 3,
+    entranceDelayMin: 1,
+    indoorWalkMin: 4,
+    entranceSummary: 'North doors or the parking-lot doors. Follow the QR sheet for the door you used.',
+    indoorSummary: 'Written directions from a posted QR sign. This is not indoor GPS.',
+    entrances: [
+      {
+        id: 'murray-commons-north',
+        name: 'North entrance',
+        slug: 'murray-commons-north',
+        directions:
+          'From the north entrance QR sign, go straight down the corridor. Turn right at the water fountain. The restroom is the second door on the left.',
+      },
+      {
+        id: 'murray-commons-parking',
+        name: 'Parking-lot entrance',
+        slug: 'murray-commons-parking',
+        directions:
+          'From the parking-lot entrance QR sign, enter through the glass doors and take the hallway on the right. The restroom is at the end of that hall, before the stairs.',
+      },
+    ],
+    sampleRating: { cleanliness: 4.6, easeOfAccess: 4.8, overall: 4.7, count: 31 },
+    ...reviewed(6),
+  }),
+  place({
+    id: 'murray-gym',
+    cityId: 'murray',
+    name: 'Gym Lobby Restroom',
+    address: '20 Overnight Gym Drive, Murray, KY',
+    location: { lat: 36.6072, lng: -88.3205 },
+    hours: [{ days: ALL, open: '20:00', close: '05:00' }],
+    wheelchair: 'yes',
+    stallType: 'multi-stall',
+    entranceSummary: 'Lobby of the sample gym, first door past the desk.',
+    sampleRating: { cleanliness: 3.9, easeOfAccess: 4.2, overall: 4.0, count: 12 },
+    ...reviewed(40),
+  }),
+  place({
+    id: 'murray-hall',
+    cityId: 'murray',
+    name: 'Hallway Restroom',
+    address: '8 Unconfirmed Hall, Murray, KY',
+    location: { lat: 36.6152, lng: -88.3095 },
+    hours: [{ days: ALL, open: '08:00', close: '20:00' }],
+    access: 'unknown',
+    sampleRating: { cleanliness: 3.2, easeOfAccess: 3.0, overall: 3.3, count: 3 },
+  }),
+  place({
+    id: 'grand-rivers-landing',
+    cityId: 'grand-rivers',
+    name: 'Landing Restroom',
+    address: '1 Demo Landing, Grand Rivers, KY',
+    location: { lat: 37.0028, lng: -88.2312 },
+    wheelchair: 'yes',
+    stallType: 'multi-stall',
+    changingTable: 'yes',
+    entranceSummary: 'Sample landing building, lakeside door.',
+    sampleRating: { cleanliness: 3.5, easeOfAccess: 3.9, overall: 3.6, count: 9 },
+    ...reviewed(18),
+  }),
+  place({
+    id: 'grand-rivers-cafe',
+    cityId: 'grand-rivers',
+    name: 'Cafe Counter Restroom',
+    address: '14 Customer Cove, Grand Rivers, KY',
+    location: { lat: 37.0002, lng: -88.2348 },
+    access: 'customer-only',
+    hours: [{ days: ALL, open: '07:00', close: '15:00' }],
+    wheelchair: 'yes',
+    stallType: 'single-user',
+    changingTable: 'no',
+    entranceSummary: 'Ask the sample counter. Listed as customer-only.',
+    sampleRating: { cleanliness: 4.0, easeOfAccess: 3.7, overall: 3.8, count: 7 },
+    ...reviewed(50),
+  }),
+  place({
+    id: 'grand-rivers-lookout',
+    cityId: 'grand-rivers',
+    name: 'Lookout Restroom',
+    address: '500 Far Ridge, Grand Rivers, KY',
+    location: { lat: 37.0165, lng: -88.258 },
+    wheelchair: 'yes',
+    stallType: 'single-user',
+    parkingDelayMin: 6,
+    entranceSummary: 'Top of the sample ridge path, single door.',
+    sampleRating: { cleanliness: 5, easeOfAccess: 4.7, overall: 4.9, count: 15 },
+    ...reviewed(9),
+  }),
+];
+
+export const SAMPLE_REPORTS: Report[] = [
+  {
+    id: 'sample-depot-locked',
+    restroomId: 'mayfield-demo-depot',
+    kind: 'locked-door',
+    note: 'Sample report: the demo door was locked on the last check.',
+    status: 'approved',
+    createdAt: ago(2),
+    reviewedAt: ago(2),
+    source: 'sample-seed',
+    sample: true,
+  },
+  {
+    id: 'sample-kiosk-pending-closed',
+    restroomId: 'mayfield-welcome-kiosk',
+    kind: 'closure',
+    note: 'Sample unreviewed report. This must not change the kiosk facts.',
+    status: 'pending',
+    createdAt: ago(1),
+    source: 'sample-seed',
+    sample: true,
+  },
+];
+
+export function getSampleReports(): Report[] {
+  return SAMPLE_REPORTS;
+}
+
+export const SEED_IDS = new Set(SEED_RESTROOMS.map((restroom) => restroom.id));
+export const SAMPLE_REPORT_IDS = new Set(SAMPLE_REPORTS.map((report) => report.id));
