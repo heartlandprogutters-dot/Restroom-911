@@ -3,18 +3,23 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vitest/config';
 import { brand } from './src/config/brand';
 
+const base = process.env.VITE_BASE || '/';
+
 export default defineConfig({
-  base: process.env.VITE_BASE || '/',
+  base,
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
+      scope: base,
       includeAssets: ['favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png'],
       manifest: {
         name: brand.name,
         short_name: brand.shortName,
         description: brand.description,
+        start_url: base,
+        scope: base,
         theme_color: brand.themeColor,
         background_color: brand.backgroundColor,
         display: 'standalone',

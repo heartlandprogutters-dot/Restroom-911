@@ -24,10 +24,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Build demo app for /restroom-911/
+      - name: Build demo app for /Restroom-911/
         run: npm run build && cp dist/index.html dist/404.html && touch dist/.nojekyll
         env:
-          VITE_BASE: /restroom-911/
+          VITE_BASE: /Restroom-911/
           VITE_DATA_SOURCE: demo
       - uses: actions/upload-pages-artifact@v3
         with:

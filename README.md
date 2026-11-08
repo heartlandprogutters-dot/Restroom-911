@@ -101,11 +101,11 @@ This repo is not deployed from here. After you create a Git repository and push 
 
 **GitHub Pages**
 
-`.github/workflows/pages.yml` builds with `VITE_BASE=/restroom-911/` and `VITE_DATA_SOURCE=demo`, copies `index.html` to `404.html` so client routes survive a refresh, and deploys with GitHub Actions. That base path is what the manifest, service worker scope, and asset URLs need for `https://heartlandprogutters-dot.github.io/restroom-911/`.
+`.github/workflows/pages.yml` builds with `VITE_BASE=/Restroom-911/` and `VITE_DATA_SOURCE=demo`, copies `index.html` to `404.html` so client routes survive a refresh, and deploys with GitHub Actions. That base path is what the manifest, service worker scope, and asset URLs need for `https://heartlandprogutters-dot.github.io/Restroom-911/`.
 
 The workflow has not been run from this environment. GitHub CLI is not signed in here, so the public repository was not created and Pages was not published.
 
-After you authenticate and create the public repo `heartlandprogutters-dot/restroom-911`:
+After you authenticate and create the public repo `heartlandprogutters-dot/Restroom-911`:
 
 1. Push `main`.
 2. In the repo settings, set Pages to **GitHub Actions** (not the branch publisher).
